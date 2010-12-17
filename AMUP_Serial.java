@@ -10,8 +10,12 @@ public class AMUP_Serial {
 	final static int filter_channel_1 =	5;                  	
 	final static int filter_channel_2 =	6;                  	
 
-	// Serial Message Sensor IDs
-	final static int loop_begin =		0;                	
+	// Serial Message Sensor IDs for master channel
+        final static int master_volume =        0;
+	final static int killer_switch =	1;                	
+
+	// Serial Message Sensor IDs for volume channels
+	final static int loop_begin = 		0;                 	
 	final static int loop_end = 		1;                 	
 	final static int loop_on_off = 		2;           	
 	final static int monitor = 		3;             	

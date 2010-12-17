@@ -61,11 +61,11 @@ public class AMUP_Volume_Channel extends AMUP_Component {
                     break;
  
                 case AMUP_Serial.cross_a:
-                    AMUP_MIDI.send_MIDI(crossfade(AMUP_Serial.cross_a, value));
+                    AMUP_MIDI.send_MIDI(crossfadeA(value));
                     break;
  
                 case AMUP_Serial.cross_b:
-                    AMUP_MIDI.send_MIDI(crossfade(AMUP_Serial.cross_b, value));
+                    AMUP_MIDI.send_MIDI(crossfadeB(value));
                     break;
 
                 case AMUP_Serial.vol_lock:
@@ -95,9 +95,9 @@ public class AMUP_Volume_Channel extends AMUP_Component {
                     break;
 
                 case AMUP_Serial.proximity:
-                    if (!vol_lock) {
+//                    if (!vol_lock) {
                       AMUP_MIDI.send_MIDI(proximity(value));
-                    } 
+//                    } 
                     break;                                      
             }		
       }
@@ -135,41 +135,49 @@ public class AMUP_Volume_Channel extends AMUP_Component {
 
 	protected MIDI_Msg[] monitor() {
 		MIDI_Msg[] midi_msg = new MIDI_Msg[1];
-		if (monitor) {
-			midi_msg[0] = new MIDI_Msg(this.component, AMUP_MIDI.monitor, AMUP_MIDI.LOW);
-			this.monitor = false;
-		} else {
-          		midi_msg[0] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.monitor, AMUP_MIDI.HIGH);
-  			this.monitor = true;
-                }
+     		midi_msg[0] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.monitor, AMUP_MIDI.HIGH);
+		if (monitor) this.monitor = false;
+		else this.monitor = true;
 		return midi_msg;
 	}
 
-	protected MIDI_Msg[] crossfade(int channel, int value) {
-                channel = channel % 2;
-  		MIDI_Msg[] midi_msg = new MIDI_Msg[3];
-  		midi_msg[0] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.channel_volume, volume);
-		midi_msg[1] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_A, AMUP_MIDI.LOW);
-		midi_msg[2] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_B, AMUP_MIDI.LOW);				
-		this.filterA_on = false;
-		this.filterB_on = false;
+	protected MIDI_Msg[] crossfadeA(int value) {
+  		MIDI_Msg[] midi_msg = new MIDI_Msg[2];
 		if (value == AMUP_MIDI.HIGH) {
-			if (channel == 0) {
-				midi_msg[0] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_A, volume);
+        		midi_msg[0] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_A, this.volume);
+        		midi_msg[1] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.channel_volume, AMUP_MIDI.LOW);
+//    	        	midi_msg[2] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_B, AMUP_MIDI.LOW);				
+    		        this.filterA_on = true;
+    		        this.filterB_on = false;
+                
+                } else if (value == AMUP_MIDI.LOW) {
+        		midi_msg[0] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.channel_volume, this.volume);
+        		midi_msg[1] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_A, AMUP_MIDI.LOW);
+//        		midi_msg[2] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_B, AMUP_MIDI.LOW);				
+    	        	this.filterA_on = false;
+    		        this.filterB_on = false;
+                }
+                return midi_msg;
+      }
+      
+      	protected MIDI_Msg[] crossfadeB(int value) {
+  		MIDI_Msg[] midi_msg = new MIDI_Msg[2];
+		if (value == AMUP_MIDI.HIGH) {
+				midi_msg[0] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_B, this.volume);				
 				midi_msg[1] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.channel_volume, AMUP_MIDI.LOW);
-				midi_msg[2] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_B, AMUP_MIDI.LOW);				
-				this.filterA_on = true;
-				this.filterB_on = false;
-			} else if (channel == 1) {
-				midi_msg[0] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_B, volume);				
-				midi_msg[1] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.channel_volume, AMUP_MIDI.LOW);
-				midi_msg[2] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_A, AMUP_MIDI.LOW);
+//				midi_msg[2] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_A, AMUP_MIDI.LOW);
 				this.filterA_on = false;
 				this.filterB_on = true;
-			}			
-		}
-		return midi_msg;
-	}
+                } else if (value == AMUP_MIDI.LOW) {
+        		midi_msg[0] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.channel_volume, volume);
+        		midi_msg[1] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_B, AMUP_MIDI.LOW);				
+//        		midi_msg[2] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_A, AMUP_MIDI.LOW);
+    	        	this.filterA_on = false;
+    		        this.filterB_on = false;
+                }
+                return midi_msg;
+
+      }
 
 	protected void vol_lock(int value) {
 		if (value == AMUP_MIDI.LOW) { vol_lock = true; } 
@@ -183,21 +191,6 @@ public class AMUP_Volume_Channel extends AMUP_Component {
 	
 	protected MIDI_Msg[] proximity(int value) {
 		this.volume = value;
-
-//		MIDI_Msg[] midi_msg = new MIDI_Msg[3];
-//		midi_msg[0] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.channel_volume, volume);
-//		midi_msg[1] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_A, AMUP_MIDI.LOW);
-//		midi_msg[2] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_B, AMUP_MIDI.LOW);			
-//		if (this.filterA_on) {
-//			midi_msg[1] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_A, volume);
-//			midi_msg[0] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.channel_volume, AMUP_MIDI.LOW);
-//			midi_msg[2] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_B, AMUP_MIDI.LOW);			
-//		}
-//		if (this.filterB_on) {
-//			midi_msg[2] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_B, volume);			
-//			midi_msg[0] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.channel_volume, AMUP_MIDI.LOW);
-//			midi_msg[1] = new MIDI_Msg(this.midi_channel, AMUP_MIDI.filter_A, AMUP_MIDI.LOW);
-//		}
 
 		MIDI_Msg[] midi_msg = new MIDI_Msg[1];
 

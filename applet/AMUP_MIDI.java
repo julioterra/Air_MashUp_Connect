@@ -18,11 +18,12 @@ public class AMUP_MIDI {
 	
 		// Master Midi Channel Messages
 		// message numbers 100 and higher
+		public final static int[] master_volume =		{1, 100};
+		public final static int[] scene_scroll =		{1, 101};
 		public final static int[] loop_begin =  		{1, 102, 127};
 		public final static int[] loop_end =  			{1, 103, 127};
 		public final static int[] loop_on_off = 		{1, 104, 127};
-		public final static int[] scene_scroll =		{1, 101};
-		public final static int[] master_volume =		{1, 100};
+                public final static int[] killer_switch =               {1, 105};
 
 		// MIDI Message ID: Filter Channel Volume Specific Messages
 		// Messages IDs from 80 to 90 are reserved for the volume channel specific messages
@@ -83,33 +84,25 @@ public class AMUP_MIDI {
     
                     midiOut = new MidiOut [midi_channels];
                     for (int i = 0; i < midi_channels; i++) {
-                        midiOut[i] = midiIO.getMidiOut(i, "AMUP_Connect_Port");
+                        midiOut[i] = midiIO.getMidiOut(0+i, "AMUP_Connect_Port");
+                        if (debug_code) {
+                          
+                        }
                     }
 
-    
-//                    input = RWMidi.getInputDevices()[0].createInput(processing_app);
-//      	      output = RWMidi.getOutputDevices()[0].createOutput();
-    
-                    if (debug_code) {
-    
-                    }
                 }
 
 
   
                 public static void send_MIDI(MIDI_Msg[] midi_msgs) {
-                   int send_counter = 0;
                    if (midi_msgs.length >= 1) {
                         if (debug_code) PApplet.println("******* MIDI Messages Sent ********* "); 
                         for (int i = 0; i < midi_msgs.length; i ++ ) {   
                             Controller control_msg = new Controller(midi_msgs[i].message, midi_msgs[i].value);
-                            if (debug_code) PApplet.println("msg " + i + " channel: " + midi_msgs[i].channel + " msg: " + midi_msgs[i].message + " value: " + midi_msgs[i].value );
-                            midiOut[midi_msgs[i].channel].sendController(control_msg);
-//                            send_counter += output.sendController(midi_msgs[i].channel, midi_msgs[i].message, midi_msgs[i].value); 
+                            midiOut[midi_msgs[i].channel-1].sendController(control_msg);
+                        if (debug_code) PApplet.println("msg " + i + " channel: " + midi_msgs[i].channel + " msg: " + midi_msgs[i].message + " value: " + midi_msgs[i].value );
                         }
                     }
-//                    if (send_counter == midi_msgs.length) return 1;
-//                    return 0;
                 }
 }
 

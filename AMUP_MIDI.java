@@ -1,6 +1,3 @@
-import rwmidi.MidiInput;
-import rwmidi.MidiOutput;
-import rwmidi.RWMidi;
 import promidi.*;
 import processing.core.PApplet;
 
@@ -18,11 +15,12 @@ public class AMUP_MIDI {
 	
 		// Master Midi Channel Messages
 		// message numbers 100 and higher
+		public final static int[] master_volume =		{1, 100};
+		public final static int[] scene_scroll =		{1, 101};
 		public final static int[] loop_begin =  		{1, 102, 127};
 		public final static int[] loop_end =  			{1, 103, 127};
 		public final static int[] loop_on_off = 		{1, 104, 127};
-		public final static int[] scene_scroll =		{1, 101};
-		public final static int[] master_volume =		{1, 100};
+                public final static int[] killer_switch =               {1, 105};
 
 		// MIDI Message ID: Filter Channel Volume Specific Messages
 		// Messages IDs from 80 to 90 are reserved for the volume channel specific messages
@@ -94,7 +92,7 @@ public class AMUP_MIDI {
 
   
                 public static void send_MIDI(MIDI_Msg[] midi_msgs) {
-                   if (midi_msgs.length >= 1) {
+                   if (midi_msgs.length > 0) {
                         if (debug_code) PApplet.println("******* MIDI Messages Sent ********* "); 
                         for (int i = 0; i < midi_msgs.length; i ++ ) {   
                             Controller control_msg = new Controller(midi_msgs[i].message, midi_msgs[i].value);

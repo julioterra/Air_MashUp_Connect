@@ -30,13 +30,9 @@ public class AMUP_Connect  extends PApplet {
             input_stream = new ArrayList<String>();  
 
             for (int i = 0; i < Serial.list().length; i++) { println(Serial.list()[i]); }
-            serial_connection = new Serial(this, Serial.list()[0], 115200);
+            serial_connection = new Serial(this, Serial.list()[0], 57600);
   	    serial_connection.bufferUntil(10); 
 
-            input = RWMidi.getInputDevices()[0].createInput(this);
-  	    output = RWMidi.getOutputDevices()[0].createOutput();
-  
-//            volume_channels[0] = (AMUP_Component)(new AMUP_Volume_Master(0));
             amup_components[0] = new AMUP_Volume_Master(0);
             amup_components[1] = new AMUP_Volume_Channel(1, 1);
             amup_components[2] = new AMUP_Volume_Channel(2, 2);
