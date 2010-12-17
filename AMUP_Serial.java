@@ -1,3 +1,6 @@
+import processing.core.PApplet;
+import processing.serial.*;
+
 
 public class AMUP_Serial {
 
@@ -33,6 +36,16 @@ public class AMUP_Serial {
 	final static int digital_HIGH = 	1;
 	final static int analog_LOW = 		0;
 	final static int analog_HIGH = 		1024;
+
+        static boolean amup_connection_established;
+        static Serial port;
+  
+        public static void setup_Serial(PApplet processing_app, int speed) {
+            for (int i = 0; i < Serial.list().length; i++) { processing_app.println(Serial.list()[i]); }
+            port = new Serial(processing_app, Serial.list()[0], speed);
+            port.bufferUntil(10); 
+            amup_connection_established = false;
+        }
 
 }
 
