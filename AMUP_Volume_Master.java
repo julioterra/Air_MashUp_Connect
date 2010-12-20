@@ -3,7 +3,9 @@ import processing.core.PApplet;
 public class AMUP_Volume_Master extends AMUP_Component{
 	public int volume;
         public int killer_switch;
-	
+        public int joint_A_volume;	
+        public int joint_B_volume;	
+
 	public AMUP_Volume_Master(int component) {
 		super(1, component);
 		this.volume = 0;
@@ -19,6 +21,15 @@ public class AMUP_Volume_Master extends AMUP_Component{
                     case AMUP_Serial.killer_switch:
                             AMUP_MIDI.send_MIDI(killer_switch(value));
                         break;
+
+                    case AMUP_Serial.joint_A_volume:
+                            AMUP_MIDI.send_MIDI(joint_A_volume(value));
+                        break;
+
+                    case AMUP_Serial.joint_B_volume:
+                            AMUP_MIDI.send_MIDI(joint_B_volume(value));
+                        break;
+
             }
 	}	
 
@@ -36,6 +47,19 @@ public class AMUP_Volume_Master extends AMUP_Component{
 		return midi_msg;
 	}
 
+	protected MIDI_Msg[] joint_A_volume(int value) {
+		this.joint_A_volume = value;
+		MIDI_Msg[] midi_msg = new MIDI_Msg[1]; 
+		midi_msg[0] = new MIDI_Msg(AMUP_MIDI.joint_A_volume[0], AMUP_MIDI.joint_A_volume[1], this.joint_A_volume); 
+		return midi_msg;
+	}
+
+	protected MIDI_Msg[] joint_B_volume(int value) {
+		this.joint_B_volume = value;
+		MIDI_Msg[] midi_msg = new MIDI_Msg[1]; 
+		midi_msg[0] = new MIDI_Msg(AMUP_MIDI.joint_B_volume[0], AMUP_MIDI.joint_B_volume[1], this.joint_B_volume); 
+		return midi_msg;
+	}
 
 }
 
